@@ -5,5 +5,9 @@ type Props = {
 };
 
 export default function Layout({ children }: Props) {
-  return <div className="h-screen bg-zinc-200">{children}</div>;
+  return (
+    <div className="h-screen space-y-10 overflow-hidden bg-zinc-200">
+      {children}
+    </div>
+  );
 }

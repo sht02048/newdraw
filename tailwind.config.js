@@ -2,7 +2,11 @@
 export default {
   content: ["./src/**/*.{html,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'anonymous': ['"Anonymous Pro"', 'monospace'],
+      }
+    },
   },
   plugins: [],
 }

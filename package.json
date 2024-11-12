@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint '**/*.{ts,tsx}'",
     "preview": "vite preview",
-    "prepare": "husky",
+    "prepare": "husky install",
     "prettier": "prettier '**/*.{json,md,ts,tsx}' --check",
     "prettier:fix": "prettier '**/*.{json,md,ts,tsx}' --write",
     "type-check": "tsc --noEmit"
@@ -37,8 +37,11 @@
     "vite": "^5.4.10"
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": [
+    "src/**/*.{ts,tsx,js,jsx}": [
       "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{md,json}": [
       "prettier --write"
     ]
   }

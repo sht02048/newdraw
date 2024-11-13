@@ -5,15 +5,17 @@ import { KonvaEventObject } from "konva/lib/Node";
 
 import Shapes from "./Shapes";
 
+import {
+  setCircles,
+  setLines,
+  setRects,
+  updateCircle,
+  updateLine,
+  updateRect,
+} from "../../../slices/paint";
 import { TOOL_TYPE } from "../../../constant";
 import usePaintSize from "../../../hooks/usePaintSize";
 import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
-import {
-  setCircles,
-  setRects,
-  updateCircle,
-  updateRect,
-} from "../../../slices/paint";
 
 export default function Paint() {
   const dispatch = useAppDispatch();
@@ -46,6 +48,9 @@ export default function Paint() {
         dispatch(setCircles({ x, y, id }));
         return;
       }
+      case TOOL_TYPE.LINE: {
+        dispatch(setLines({ x, y, id }));
+      }
     }
   }
 
@@ -65,6 +70,10 @@ export default function Paint() {
       }
       case TOOL_TYPE.CIRCLE: {
         dispatch(updateCircle({ x, y, id: currentId }));
+        return;
+      }
+      case TOOL_TYPE.LINE: {
+        dispatch(updateLine({ x, y, id: currentId }));
         return;
       }
     }

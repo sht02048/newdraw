@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
-import type { Circle, Rectangle } from "../types/shape";
+import type { Circle, Line, Rectangle } from "../types/shape";
 import type {
   InitialState,
   LocationData,
   ToolType,
 } from "../types/slice.paint";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 
 const initialState: InitialState = {
   historyStep: 0,
@@ -17,6 +18,7 @@ const initialState: InitialState = {
   strokeWidth: DEFAULT_VALUE.STROKE_WIDTH,
   rects: [],
   circles: [],
+  lines: [],
 };
 
 const paintSlice = createSlice({
@@ -95,13 +97,40 @@ const paintSlice = createSlice({
     updateCircle: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
       const currentCircle: Circle[] | undefined = state.circles.filter(
-        (rect) => rect.id === id,
+        (circle) => circle.id === id,
       );
 
       if (!currentCircle) return;
 
       currentCircle[0].radius =
         ((x - currentCircle[0].x) ** 2 + (y - currentCircle[0].y) ** 2) ** 0.5;
+    },
+    setLines: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const { stroke, strokeWidth } = state;
+      const intX = Number(x);
+      const intY = Number(y);
+      const newLine: Line = {
+        id,
+        points: [intX, intY, intX, intY],
+        stroke,
+        strokeWidth: Number(strokeWidth),
+        lineCap: DEFAULT_VALUE.LINE_CAP as LineCap,
+        lineJoin: DEFAULT_VALUE.LINE_JOIN as LineJoin,
+      };
+
+      state.lines.push(newLine);
+    },
+    updateLine: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentLine: Line[] | undefined = state.lines.filter(
+        (line) => line.id === id,
+      );
+
+      if (!currentLine) return;
+
+      currentLine[0].points[2] = Number(x);
+      currentLine[0].points[3] = Number(y);
     },
   },
 });
@@ -117,6 +146,8 @@ export const {
   changeStrokeWidth,
   setCircles,
   updateCircle,
+  setLines,
+  updateLine,
 } = paintSlice.actions;
 
 export default paintSlice.reducer;

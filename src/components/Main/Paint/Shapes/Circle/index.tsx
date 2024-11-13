@@ -13,6 +13,7 @@ export default function Circle() {
       {circles.map((circle) => (
         <KonvaCircle
           key={circle.id}
+          id={circle.id}
           x={circle.x}
           y={circle.y}
           radius={circle.radius}

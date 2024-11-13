@@ -10,6 +10,8 @@ const DEFAULT_VALUE = {
   COLOR: "#2f73bf",
   STROKE: "#000000",
   STROKE_WIDTH: "5",
+  LINE_CAP: "round",
+  LINE_JOIN: "round",
 };
 
 export { SESSION_KEY, TOOL_TYPE, DEFAULT_VALUE };

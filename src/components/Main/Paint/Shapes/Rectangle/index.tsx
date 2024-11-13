@@ -12,6 +12,7 @@ export default function Rectangle() {
       {rects.map((rect) => (
         <Rect
           key={rect.id}
+          id={rect.id}
           x={rect.x}
           y={rect.y}
           width={rect.width}

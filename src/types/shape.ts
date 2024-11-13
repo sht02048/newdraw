@@ -1,19 +1,29 @@
 import { Coordinate } from "./slice.paint";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 
-type Shape = Coordinate & {
+type Shape = {
   id: string;
-  fill: string;
   stroke: string;
   strokeWidth: number;
 };
 
-type Rectangle = Shape & {
-  width: number;
-  height: number;
+type Rectangle = Shape &
+  Coordinate & {
+    width: number;
+    height: number;
+    fill: string;
+  };
+
+type Circle = Shape &
+  Coordinate & {
+    radius: number;
+    fill: string;
+  };
+
+type Line = Shape & {
+  points: number[];
+  lineCap: LineCap;
+  lineJoin: LineJoin;
 };
 
-type Circle = Shape & {
-  radius: number;
-};
-
-export type { Rectangle, Circle };
+export type { Rectangle, Circle, Line };

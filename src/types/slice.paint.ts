@@ -8,6 +8,9 @@ type InitialState = {
   history: [];
   toolType: ToolType;
   rects: Rectangle[];
+  color: string;
+  stroke: string;
+  strokeWidth: number;
 };
 
 type Coordinate = {

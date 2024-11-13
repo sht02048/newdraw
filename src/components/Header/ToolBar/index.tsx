@@ -1,15 +1,17 @@
 import Tool from "./Tool";
+import Color from "./Color";
 import { TOOL_TYPE } from "../../../constant";
 
 export default function ToolBar() {
   return (
     <div className="mx-auto">
-      <div className="flex justify-center w-64">
+      <div className="flex items-center justify-center w-64 gap-2">
         <Tool toolType={TOOL_TYPE.SELECT} src="/src/assets/grab.svg" />
         <Tool toolType={TOOL_TYPE.LINE} src="/src/assets/linear.svg" />
         <Tool toolType={TOOL_TYPE.CIRCLE} src="/src/assets/circle.svg" />
         <Tool toolType={TOOL_TYPE.RECTANGLE} src="/src/assets/square.svg" />
         <Tool toolType={TOOL_TYPE.TRIANGLE} src="/src/assets/triangle.svg" />
+        <Color />
       </div>
     </div>
   );

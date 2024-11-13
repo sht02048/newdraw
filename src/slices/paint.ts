@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { TOOL_TYPE } from "../constant";
+import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
 import type { Rectangle } from "../types/shape";
 import type {
   InitialState,
@@ -13,6 +13,9 @@ const initialState: InitialState = {
   history: [],
   toolType: TOOL_TYPE.RECTANGLE,
   rects: [],
+  color: DEFAULT_VALUE.COLOR,
+  stroke: DEFAULT_VALUE.STROKE,
+  strokeWidth: DEFAULT_VALUE.STROKE_WIDTH,
 };
 
 const paintSlice = createSlice({
@@ -30,18 +33,21 @@ const paintSlice = createSlice({
       state.historyStep += 1;
     },
     clearPaint: () => {
+      sessionStorage.clear();
+
       return initialState;
     },
     setRects: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
+      const { color, stroke, strokeWidth } = state;
       const newRect = {
         x: Number(x),
         y: Number(y),
         width: 0,
         height: 0,
-        fill: "red",
-        stroke: "blue",
-        strokeWidth: 2,
+        fill: color,
+        stroke,
+        strokeWidth,
         id,
       };
 
@@ -61,10 +67,20 @@ const paintSlice = createSlice({
     changeTool: (state, action: PayloadAction<{ toolType: ToolType }>) => {
       state.toolType = action.payload.toolType;
     },
+    changeColor: (state, action: PayloadAction<{ color: string }>) => {
+      state.color = action.payload.color;
+    },
   },
 });
 
-export const { undo, redo, setRects, updateRect, clearPaint, changeTool } =
-  paintSlice.actions;
+export const {
+  undo,
+  redo,
+  setRects,
+  updateRect,
+  clearPaint,
+  changeTool,
+  changeColor,
+} = paintSlice.actions;
 
 export default paintSlice.reducer;

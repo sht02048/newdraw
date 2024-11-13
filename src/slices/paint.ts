@@ -23,6 +23,9 @@ const paintSlice = createSlice({
 
       state.historyStep += 1;
     },
+    clearPaint: () => {
+      return initialState;
+    },
     setRects: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
       const newRect = {
@@ -52,6 +55,7 @@ const paintSlice = createSlice({
   },
 });
 
-export const { undo, redo, setRects, updateRect } = paintSlice.actions;
+export const { undo, redo, setRects, updateRect, clearPaint } =
+  paintSlice.actions;
 
 export default paintSlice.reducer;

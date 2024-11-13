@@ -7,17 +7,22 @@ import Shapes from "./Shapes";
 
 import { TOOL_TYPE } from "../../../constant";
 import usePaintSize from "../../../hooks/usePaintSize";
-import { setRects, updateRect } from "../../../slices/paint";
 import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
+import {
+  setCircles,
+  setRects,
+  updateCircle,
+  updateRect,
+} from "../../../slices/paint";
 
 export default function Paint() {
+  const dispatch = useAppDispatch();
   const stageRef = useRef<HTMLDivElement | null>(null);
   const [shapeId, setShapeId] = useState<string | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  const toolType = useAppSelector((state) => state.paint.toolType);
   const { paintWidth, paintHeight } = usePaintSize(stageRef);
-  const dispatch = useAppDispatch();
-  const drawAction = useAppSelector((state) => state.paint.toolType);
-  const isDraggable = drawAction === TOOL_TYPE.SELECT;
+  const isDraggable = toolType === TOOL_TYPE.SELECT;
 
   function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
     if (isDraggable) return;
@@ -31,7 +36,17 @@ export default function Paint() {
     const id = uuid();
 
     setShapeId(id);
-    dispatch(setRects({ x, y, id }));
+
+    switch (toolType) {
+      case TOOL_TYPE.RECTANGLE: {
+        dispatch(setRects({ x, y, id }));
+        return;
+      }
+      case TOOL_TYPE.CIRCLE: {
+        dispatch(setCircles({ x, y, id }));
+        return;
+      }
+    }
   }
 
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
@@ -43,7 +58,16 @@ export default function Paint() {
     const { x, y } = position;
     const currentId = shapeId;
 
-    dispatch(updateRect({ x, y, id: currentId }));
+    switch (toolType) {
+      case TOOL_TYPE.RECTANGLE: {
+        dispatch(updateRect({ x, y, id: currentId }));
+        return;
+      }
+      case TOOL_TYPE.CIRCLE: {
+        dispatch(updateCircle({ x, y, id: currentId }));
+        return;
+      }
+    }
   }
 
   function handleMouseUp() {

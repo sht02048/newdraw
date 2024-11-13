@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
-import type { Rectangle } from "../types/shape";
+import type { Circle, Rectangle } from "../types/shape";
 import type {
   InitialState,
   LocationData,
@@ -12,10 +12,11 @@ const initialState: InitialState = {
   historyStep: 0,
   history: [],
   toolType: TOOL_TYPE.RECTANGLE,
-  rects: [],
   color: DEFAULT_VALUE.COLOR,
   stroke: DEFAULT_VALUE.STROKE,
   strokeWidth: DEFAULT_VALUE.STROKE_WIDTH,
+  rects: [],
+  circles: [],
 };
 
 const paintSlice = createSlice({
@@ -37,10 +38,22 @@ const paintSlice = createSlice({
 
       return initialState;
     },
+    changeTool: (state, action: PayloadAction<{ toolType: ToolType }>) => {
+      state.toolType = action.payload.toolType;
+    },
+    changeColor: (state, action: PayloadAction<{ color: string }>) => {
+      state.color = action.payload.color;
+    },
+    changeStrokeWidth: (
+      state,
+      action: PayloadAction<{ strokeWidth: string }>,
+    ) => {
+      state.strokeWidth = action.payload.strokeWidth;
+    },
     setRects: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
       const { color, stroke, strokeWidth } = state;
-      const newRect = {
+      const newRect: Rectangle = {
         x: Number(x),
         y: Number(y),
         width: 0,
@@ -64,17 +77,31 @@ const paintSlice = createSlice({
       currentRect[0].width = x - currentRect[0].x;
       currentRect[0].height = y - currentRect[0].y;
     },
-    changeTool: (state, action: PayloadAction<{ toolType: ToolType }>) => {
-      state.toolType = action.payload.toolType;
+    setCircles: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const { color, stroke, strokeWidth } = state;
+      const newCircle: Circle = {
+        x: Number(x),
+        y: Number(y),
+        radius: 1,
+        fill: color,
+        stroke,
+        strokeWidth: Number(strokeWidth),
+        id,
+      };
+
+      state.circles.push(newCircle);
     },
-    changeColor: (state, action: PayloadAction<{ color: string }>) => {
-      state.color = action.payload.color;
-    },
-    changeStrokeWidth: (
-      state,
-      action: PayloadAction<{ strokeWidth: string }>,
-    ) => {
-      state.strokeWidth = action.payload.strokeWidth;
+    updateCircle: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentCircle: Circle[] | undefined = state.circles.filter(
+        (rect) => rect.id === id,
+      );
+
+      if (!currentCircle) return;
+
+      currentCircle[0].radius =
+        ((x - currentCircle[0].x) ** 2 + (y - currentCircle[0].y) ** 2) ** 0.5;
     },
   },
 });
@@ -88,6 +115,8 @@ export const {
   changeTool,
   changeColor,
   changeStrokeWidth,
+  setCircles,
+  updateCircle,
 } = paintSlice.actions;
 
 export default paintSlice.reducer;

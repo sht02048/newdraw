@@ -7,9 +7,9 @@ const TOOL_TYPE = {
   TRIANGLE: "TRIANGLE",
 } as const;
 const DEFAULT_VALUE = {
-  COLOR: "#000000",
+  COLOR: "#2f73bf",
   STROKE: "#000000",
-  STROKE_WIDTH: 5,
+  STROKE_WIDTH: "5",
 };
 
 export { SESSION_KEY, TOOL_TYPE, DEFAULT_VALUE };

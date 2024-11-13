@@ -10,7 +10,7 @@ type InitialState = {
   rects: Rectangle[];
   color: string;
   stroke: string;
-  strokeWidth: number;
+  strokeWidth: string;
 };
 
 type Coordinate = {

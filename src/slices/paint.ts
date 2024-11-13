@@ -47,7 +47,7 @@ const paintSlice = createSlice({
         height: 0,
         fill: color,
         stroke,
-        strokeWidth,
+        strokeWidth: Number(strokeWidth),
         id,
       };
 
@@ -70,6 +70,12 @@ const paintSlice = createSlice({
     changeColor: (state, action: PayloadAction<{ color: string }>) => {
       state.color = action.payload.color;
     },
+    changeStrokeWidth: (
+      state,
+      action: PayloadAction<{ strokeWidth: string }>,
+    ) => {
+      state.strokeWidth = action.payload.strokeWidth;
+    },
   },
 });
 
@@ -81,6 +87,7 @@ export const {
   clearPaint,
   changeTool,
   changeColor,
+  changeStrokeWidth,
 } = paintSlice.actions;
 
 export default paintSlice.reducer;

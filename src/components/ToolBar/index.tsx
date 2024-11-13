@@ -1,3 +1,14 @@
+import Icon from "../Icon";
+
 export default function ToolBar() {
-  return <div className="w-1/5 bg-white h-5/6">this is ToolBar</div>;
+  return (
+    <div className="mx-auto">
+      <div className="flex w-64">
+        <Icon src="/src/assets/linear.svg" />
+        <Icon src="/src/assets/circle.svg" />
+        <Icon src="/src/assets/square.svg" />
+        <Icon src="/src/assets/triangle.svg" />
+      </div>
+    </div>
+  );
 }

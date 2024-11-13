@@ -1,6 +1,6 @@
 import { Rect } from "react-konva";
-import { TOOL_TYPE } from "../../../../constant";
-import { useAppSelector } from "../../../../lib/redux/hooks";
+import { TOOL_TYPE } from "../../../../../constant";
+import { useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default function Rectangle() {
   const rects = useAppSelector((state) => state.paint.rects);

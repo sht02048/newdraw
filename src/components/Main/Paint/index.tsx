@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 
-import Shapes from "../Shapes";
+import Shapes from "./Shapes";
 
 import { TOOL_TYPE } from "../../../constant";
 import usePaintSize from "../../../hooks/usePaintSize";

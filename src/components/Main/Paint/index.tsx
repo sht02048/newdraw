@@ -6,8 +6,8 @@ import { KonvaEventObject } from "konva/lib/Node";
 import Shapes from "../Shapes";
 
 import usePaintSize from "../../../hooks/usePaintSize";
-import { setRects, updateRect } from "../../../slices/paint";
 import { useAppDispatch } from "../../../lib/redux/hooks";
+import { setRects, updateRect } from "../../../slices/paint";
 
 export default function Paint() {
   const stageRef = useRef<HTMLDivElement | null>(null);

@@ -1,17 +1,19 @@
 import { v4 as uuid } from "uuid";
 import { useRef, useState } from "react";
-import { KonvaEventObject } from "konva/lib/Node";
 import { Stage, Layer, Rect } from "react-konva";
+import { KonvaEventObject } from "konva/lib/Node";
 
 import usePaintSize from "../../hooks/usePaintSize";
-import type { Rectangle } from "../../types/shape";
+import { setRects, updateRect } from "../../slices/paint";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 
 export default function Paint() {
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const [rects, setRects] = useState<Rectangle[]>([]);
   const [shapeId, setShapeId] = useState<string | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const { paintWidth, paintHeight } = usePaintSize(stageRef);
+  const dispatch = useAppDispatch();
+  const rects = useAppSelector((state) => state.paint.rects);
 
   function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
     setIsDrawing(true);
@@ -23,23 +25,11 @@ export default function Paint() {
     const id = uuid();
 
     setShapeId(id);
-    setRects((prevRects) => [
-      ...prevRects,
-      {
-        x: Number(x),
-        y: Number(y),
-        width: 0,
-        height: 0,
-        fill: "red",
-        stroke: "blue",
-        strokeWidth: 2,
-        id,
-      },
-    ]);
+    dispatch(setRects({ x, y, id }));
   }
 
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-    if (!isDrawing) return;
+    if (!isDrawing || !shapeId) return;
     const position = e.target.getStage()?.getPointerPosition();
 
     if (!position) return;
@@ -47,17 +37,7 @@ export default function Paint() {
     const { x, y } = position;
     const currentId = shapeId;
 
-    setRects((prevRects) =>
-      prevRects?.map((prevRect) =>
-        prevRect.id === currentId
-          ? {
-              ...prevRect,
-              height: y - prevRect.y,
-              width: x - prevRect.x,
-            }
-          : prevRect,
-      ),
-    );
+    dispatch(updateRect({ x, y, id: currentId }));
   }
 
   function handleMouseUp() {

@@ -1,8 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
+import type { Rectangle } from "../types/shape";
+import type { InitialState, LocationData } from "../types/slice.paint";
+
+const initialState: InitialState = {
   historyStep: 0,
-  history: [1, 2, 3],
+  history: [],
+  rects: [],
 };
 
 const paintSlice = createSlice({
@@ -19,9 +23,35 @@ const paintSlice = createSlice({
 
       state.historyStep += 1;
     },
+    setRects: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const newRect = {
+        x: Number(x),
+        y: Number(y),
+        width: 0,
+        height: 0,
+        fill: "red",
+        stroke: "blue",
+        strokeWidth: 2,
+        id,
+      };
+
+      state.rects.push(newRect);
+    },
+    updateRect: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentRect: Rectangle[] | undefined = state.rects.filter(
+        (rect) => rect.id === id,
+      );
+
+      if (!currentRect) return;
+
+      currentRect[0].width = x - currentRect[0].x;
+      currentRect[0].height = y - currentRect[0].y;
+    },
   },
 });
 
-export const { undo, redo } = paintSlice.actions;
+export const { undo, redo, setRects, updateRect } = paintSlice.actions;
 
 export default paintSlice.reducer;

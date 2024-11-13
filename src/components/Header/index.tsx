@@ -1,6 +1,6 @@
-import Title from "../Title";
-import ToolBar from "../ToolBar";
-import HistoryControl from "../HistoryControl";
+import Title from "./Title";
+import ToolBar from "./ToolBar";
+import HistoryControl from "./HistoryControl";
 
 export default function Header() {
   return (

@@ -1,4 +1,4 @@
-import Paint from "../Paint";
+import Paint from "./Paint";
 
 export default function Main() {
   return (

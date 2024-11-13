@@ -1,6 +1,6 @@
 import Icon from "../Icon";
-import { clearPaint } from "../../slices/paint";
-import { useAppDispatch } from "../../lib/redux/hooks";
+import { clearPaint } from "../../../slices/paint";
+import { useAppDispatch } from "../../../lib/redux/hooks";
 
 export default function HistoryControl() {
   const dispatch = useAppDispatch();

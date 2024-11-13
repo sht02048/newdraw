@@ -1,11 +1,13 @@
 import { v4 as uuid } from "uuid";
 import { useRef, useState } from "react";
-import { Stage, Layer, Rect } from "react-konva";
+import { Stage, Layer } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 
-import usePaintSize from "../../hooks/usePaintSize";
-import { setRects, updateRect } from "../../slices/paint";
-import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
+import Shapes from "../Shapes";
+
+import usePaintSize from "../../../hooks/usePaintSize";
+import { setRects, updateRect } from "../../../slices/paint";
+import { useAppDispatch } from "../../../lib/redux/hooks";
 
 export default function Paint() {
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -13,7 +15,6 @@ export default function Paint() {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const { paintWidth, paintHeight } = usePaintSize(stageRef);
   const dispatch = useAppDispatch();
-  const rects = useAppSelector((state) => state.paint.rects);
 
   function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
     setIsDrawing(true);
@@ -54,18 +55,7 @@ export default function Paint() {
         onMouseUp={handleMouseUp}
       >
         <Layer>
-          {rects.map((rect) => (
-            <Rect
-              key={rect.id}
-              x={rect.x}
-              y={rect.y}
-              width={rect.width}
-              height={rect.height}
-              fill={rect.fill}
-              stroke={rect.stroke}
-              strokeWidth={rect.strokeWidth}
-            />
-          ))}
+          <Shapes />
         </Layer>
       </Stage>
     </div>

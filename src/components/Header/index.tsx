@@ -4,7 +4,7 @@ import HistoryControl from "./HistoryControl";
 
 export default function Header() {
   return (
-    <div className="flex items-center h-16 px-6 bg-white shadow">
+    <div className="flex items-center h-16 px-16 bg-white shadow">
       <Title />
       <ToolBar />
       <HistoryControl />

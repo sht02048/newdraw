@@ -1,5 +1,7 @@
+import { SESSION_KEY } from "../../constant";
+
 const sessionMiddleware = (storeAPI) => (next) => (action) => {
-  sessionStorage.setItem("appState", JSON.stringify(storeAPI.getState()));
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(storeAPI.getState()));
 
   return next(action);
 };

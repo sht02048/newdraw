@@ -1,6 +1,8 @@
+import { SESSION_KEY } from "../../constant";
+
 export default function loadState() {
   try {
-    const serializedState = sessionStorage.getItem("appState");
+    const serializedState = sessionStorage.getItem(SESSION_KEY);
     if (serializedState === null) return;
     return JSON.parse(serializedState);
   } catch (e) {

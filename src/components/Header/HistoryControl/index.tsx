@@ -1,4 +1,4 @@
-import Icon from "../Icon";
+import Icon from "./Icon";
 import { clearPaint } from "../../../slices/paint";
 import { useAppDispatch } from "../../../lib/redux/hooks";
 

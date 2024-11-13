@@ -5,9 +5,10 @@ import { KonvaEventObject } from "konva/lib/Node";
 
 import Shapes from "../Shapes";
 
+import { TOOL_TYPE } from "../../../constant";
 import usePaintSize from "../../../hooks/usePaintSize";
-import { useAppDispatch } from "../../../lib/redux/hooks";
 import { setRects, updateRect } from "../../../slices/paint";
+import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
 
 export default function Paint() {
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -15,8 +16,12 @@ export default function Paint() {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const { paintWidth, paintHeight } = usePaintSize(stageRef);
   const dispatch = useAppDispatch();
+  const drawAction = useAppSelector((state) => state.paint.toolType);
+  const isDraggable = drawAction === TOOL_TYPE.SELECT;
 
   function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
+    if (isDraggable) return;
+
     setIsDrawing(true);
     const position = e.target.getStage()?.getPointerPosition();
 
@@ -30,7 +35,7 @@ export default function Paint() {
   }
 
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-    if (!isDrawing || !shapeId) return;
+    if (!isDrawing || !shapeId || isDraggable) return;
     const position = e.target.getStage()?.getPointerPosition();
 
     if (!position) return;

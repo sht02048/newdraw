@@ -1,50 +1,95 @@
-# React + TypeScript + Vite
+# 뉴로클 사전과제
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 시작하기
 
-Currently, two official plugins are available:
+### 로컬에서 실행하기
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. `git clone` 후 터미널에 `npm install` 입력으로 `node_modules` 다운로드
+2. `npm run dev` 입력 후 `http://localhost:5173/`으로 접근 혹은 터미널 Url 이용
 
-## Expanding the ESLint configuration
+### 배포 사이트 이용하기
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+[과제 배포 사이트](https://newdraw-iota.vercel.app/)
 
-- Configure the top-level `parserOptions` property like this:
+<br>
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
+## 필수 구현 기능
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 1. 드로잉 타입 선택: 직선, 곡선, 원, 직사각형, 다각형
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+- [x] 1회성 드로잉이 아닌, 그려진 도형들이 한 화면에서 나타날 수 있어야 합니다.
+- [x] 새로 고침 이후에도 캔버스 내용이 유지되어야 합니다.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+### 2 선 두께 선택
+
+- [x] 두께 값의 최소/최대 제한이 필요합니다. (최소 5px, 최대 50px)
+
+### 3. 컬러 선택
+
+- [x] 현재 선택된 컬러를 사용자가 인지할 수 있어야 합니다.
+
+<br>
+
+## 선택사항
+
+### UnDo ReDo
+
+- [x] 지난 작업으로 돌아갈 수 있어야 하고 마지막으로 작업한 시점으로 돌아올 수도 있어야 합니다.
+- [x] 최근 40개의 작업 기록만 저장되도록 해주세요..
+
+# 목차
+
+- [기술 스택 선정의 이유](#기술-스택-선정의-이유)
+  - [빠르고 간결한 테일윈드](#빠르고-간결한-테일윈드)
+  - [리덕스의 강력한 미들웨어](#리덕스의-강력한-미들웨어)
+- [부족했던 점](#부족했던-점)
+- [앞으로 NeuDraw에 필요한 것](#앞으로-neudraw에-필요한-것)
+
+<br>
+
+## 기술 스택 선정의 이유
+
+뉴로클 과제를 진행하면서 사용한 요구 기술 외에 사용한 주요 기술은 테일윈드와 리덕스있니다. 이를 어떤 이유로 사용했는지 설명드리겠습니다.
+
+### 빠르고 간결한 테일윈드
+
+CSS 프레임워크는 유틸리티로 강조되는 테일윈드와 CSS in JS 기반 프레임워크가 가장 많이 사용되곤 합니다. 이 중에 제가 채택한 것은 테일윈드였습니다.
+이유는 크게 두 가지였습니다.
+
+1. 한정된 시간
+2. 재사용 가능성이 적은 컴포넌트 구조
+
+첫 번째로 3일 남짓되는 기한을 가지고 빠르게 프로젝트를 구현해야하는 상황에서 최적화된 프레임워크는 테일윈드라고 생각합니다. 태그의 스타일을 인라인처럼 시시각각 변경할 수 있으며 자체적으로 제공하는 색깔과 두꼐와 같은 프리셋은 개발 속도를 높이는 데 충분한 역할을 합니다. 이와 반면에 CSS in JS는 컴포넌트 설계를 통해 미리 계획을 짜고 수행해야한다는 점에서 유연성이 높지 않다고 판단했습니다.
+
+두 번째로 현 과제의 특성상 재사용할 수 있는 컴포넌트가 적어 CSS in JS의 특장점을 끌어내기에 부족한 상황이라고 판단했습니다. 현 과제는 컴포넌트에 스타일을 부여하는 것보다 내부 로직이 더 중요한 테스크가 부여됐기 때문에 CSS in JS보다 테일윈드를 사용하기 더 적합니다.
+
+### 리덕스의 강력한 미들웨어
+
+이번 과제의 키 포인트 중 하나는 상태를 보관하는 것이었습니다. 새로고침 후에도 상태를 유지하기 위해서는 세션과 로컬 그리고 서버를 이용하는 방법이 있지만 서버는 시간이 많이 소모되고 로컬 스토리지는 탭 간에 데이터 공유 및 불필요하게 긴 저장 주기때문에 세션 스토리지를 사용했습니다.
+
+리덕스는 상태 업데이트 전후로 미들웨어를 실행시키는 기능을 손 쉽게 제공합니다. 이를 통해서 상태가 업데이트 된 후에 세션 스토리지에 저장해 새로고침 후에도 이전 작업물을 사용자에게 다시 그대로 보여줄 수 있었습니다.
+
+그러나, 좋은 점만 있는 것은 아니었습니다. RTK가 나왔다고는 하나 꽤 많은 보일러 플레이트를 작성해야했으며 하나의 Slice에서 여러 로직을 관리하다보니 점점 비대해져가는 것을 경험했고 이후에는 로직 분리 필요성을 느꼈습니다.
+
+그럼에도 하나로 집중되는 탓에 손 쉽고 빠르게 리듀서 함수를 작성할 수 있었습니다. 만약 시간이 더 주어진다면 Slice를 제일 먼저 리팩토링하고 싶습니다.
+
+## 부족했던 점
+
+Konva는 드로잉 툴을 만드는데 아주 적합한 라이브러리로 매우 다양한 기능을 제공합니다. 그럼에도 아직 부족한 실력으로 인해 몇 가지 구현하지 못한 기능 혹은 오류가 발생하는 기능이 있습니다.
+
+1. 선 이동시 좌표 설정 오류
+2. 직사각형 제외 transformer 상태 연동 X
+
+먼저 직선과 곡선을 드래그 후 좌표를 설정하는데 성공했으나 어떤 이유에선지 움직인 거리 \* 2만큼 선이 이동합니다. 한 가지 이상한 점은 상태는 정상적으로 저장되는데 렌더링만 다르게 된다는 점입니다. NeuDraw의 모든 도형 컴포넌트들은 제어 컴포넌트로 상태로 가지고 있는 좌표 값으로 위치를 지정하지만 다르게 디스플레이된다는 점은 아직 이해하지 못했습니다. 어떤 식으로 드래그앤드랍이 구현되어있는지 찾아봐야 이해할 수 있을 것 같습니다.
+
+두 번쨰로 transformer와 상태를 연동하지 못했습니다. 드로잉 툴에 가장 핵심적인 기능임에도 구현하지 못해서 이는 최우선적으로 진행되어야할 다음 기능이라고 생각합니다. transformer를 다루면서 가장 어려웠던 점은 shape이 변경된다는 점이었습니다. 원은 radius라는 속성을 가지며 이를 중심으로 완전환 원형이 되는데 transformer를 사용시 타원도 가능해지기 때문에 이런 값들을 어떻게 설정해야하는지 연구해봐야 합니다.
+
+## 앞으로 NeuDraw에 필요한 것
+
+앞서 서술한 것 이외에도 개선할 점이 있다고 생각합니다.
+
+가장 하고 싶은 것은 Shape들의 공통 컴포넌트화입니다. Shape 컴포넌트의 내부 로직이 매우 유사한데 이를 어떻게 하면 현명하게 빼올 수 있을 지 고민입니다. 예전에는 비슷한 컴포넌트들을 하나로 묶어서 사용하는 것이 가장 좋다고 생각했는데 최근에 들어서는 공통으로 뺴는 것의 역효과를 많이 경험해서 어떤 것이 더 나은 결정일지 고민하고 있습니다. 그럼에도 Shape 내부 컴포넌트들은 한번 빼서 관리하는 것이 유지 보수에 더 용이할 것 같습니다.
+
+두 번쨰는 stroke 컬러를 변경하는 기능을 구현하고 싶습니다. 제시된 stroke의 두께가 생각보다 커서 stroke의 색이 변경된다면 좋다고 생각했습니다.
+
+마지막으로는 프리 드로우 기능입니다. 윈도우 그림판처럼 NeuDraw를 화이트보드처럼 이용할 수 있는 기능을 넣으면 사용자 입장에서도 이용이 편리해질 것 같습니다.

@@ -1,13 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type {
+  History,
   InitialState,
   LocationData,
   ToolType,
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
-import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
-import type { Circle, Curve, Line, Polygon, Rectangle } from "../types/shape";
+import { DEFAULT_VALUE, SESSION_KEY, TOOL_TYPE } from "../constant";
+import type {
+  Circle,
+  Curve,
+  Diagram,
+  Line,
+  Polygon,
+  Rectangle,
+} from "../types/shape";
 
 const initialState: InitialState = {
   historyStep: 0,
@@ -58,6 +66,36 @@ const paintSlice = createSlice({
     changeVertex: (state, action: PayloadAction<{ vertex: string }>) => {
       state.vertex = action.payload.vertex;
     },
+    moveDiagram: (state, action: PayloadAction<History>) => {
+      const history = action.payload;
+      const { x, y, id, shape } = history;
+      const shapeStorage = {
+        [TOOL_TYPE.CIRCLE]: state.circles,
+        [TOOL_TYPE.RECTANGLE]: state.rects,
+        [TOOL_TYPE.POLYGON]: state.polygons,
+      };
+
+      if (
+        shape === TOOL_TYPE.SELECT ||
+        shape === TOOL_TYPE.LINE ||
+        shape === TOOL_TYPE.CURVE
+      )
+        return;
+
+      const shapes = shapeStorage[shape];
+      const currentShape: Diagram | undefined = shapes.find(
+        (shape) => shape.id === id,
+      );
+
+      if (!currentShape) return;
+
+      currentShape.x = x;
+      currentShape.y = y;
+
+      const appState = { paint: state };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(appState));
+      state.history.push(history);
+    },
     setRects: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
       const { color, stroke, strokeWidth } = state;
@@ -82,8 +120,11 @@ const paintSlice = createSlice({
 
       if (!currentRect) return;
 
-      currentRect.width = x - currentRect.x;
-      currentRect.height = y - currentRect.y;
+      const moveToX = x - currentRect.x;
+      const moveToY = y - currentRect.y;
+
+      currentRect.width = moveToX;
+      currentRect.height = moveToY;
     },
     setCircles: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -204,19 +245,20 @@ const paintSlice = createSlice({
 export const {
   undo,
   redo,
-  setRects,
-  updateRect,
   clearPaint,
   changeTool,
   changeColor,
   changeStrokeWidth,
   changeVertex,
-  setCircles,
-  updateCircle,
   setLines,
   updateLine,
   setCurves,
   updateCurve,
+  setCircles,
+  updateCircle,
+  setRects,
+  updateRect,
+  moveDiagram,
   setPolygons,
   updatePolygon,
 } = paintSlice.actions;

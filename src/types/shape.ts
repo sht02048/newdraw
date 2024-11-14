@@ -34,4 +34,6 @@ type Curve = Line & {
   tension: number;
 };
 
-export type { Rectangle, Circle, Line, Curve, Polygon };
+type Diagram = Circle | Rectangle | Polygon;
+
+export type { Rectangle, Circle, Line, Curve, Polygon, Diagram };

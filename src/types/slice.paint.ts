@@ -3,9 +3,15 @@ import type { Circle, Curve, Line, Polygon, Rectangle } from "./shape";
 
 type ToolType = keyof typeof TOOL_TYPE;
 
+type History = Coordinate & {
+  action: "create" | "move";
+  shape: ToolType;
+  id: string;
+};
+
 type InitialState = {
   historyStep: number;
-  history: [];
+  history: History[];
   toolType: ToolType;
   color: string;
   stroke: string;
@@ -27,4 +33,4 @@ type LocationData = Coordinate & {
   id: string;
 };
 
-export type { InitialState, Coordinate, LocationData, ToolType };
+export type { InitialState, Coordinate, LocationData, ToolType, History };

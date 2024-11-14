@@ -1,12 +1,26 @@
+import { memo } from "react";
 import { RegularPolygon } from "react-konva";
+import { KonvaEventObject } from "konva/lib/Node";
 
 import { TOOL_TYPE } from "../../../../../constant";
-import { useAppSelector } from "../../../../../lib/redux/hooks";
+import { moveDiagram } from "../../../../../slices/paint";
+import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
-export default function Polygon() {
+export default memo(Polygon);
+
+function Polygon() {
+  const dispatch = useAppDispatch();
   const polygons = useAppSelector((state) => state.paint.polygons);
   const toolType = useAppSelector((state) => state.paint.toolType);
   const isDraggable = toolType === TOOL_TYPE.SELECT;
+
+  function handleDragEnd(e: KonvaEventObject<MouseEvent>) {
+    const x = e.target.x();
+    const y = e.target.y();
+    const id = e.target.id();
+
+    dispatch(moveDiagram({ action: "move", x, y, id, shape: "POLYGON" }));
+  }
 
   return (
     <>
@@ -22,6 +36,7 @@ export default function Polygon() {
           stroke={polygon.stroke}
           strokeWidth={polygon.strokeWidth}
           draggable={isDraggable}
+          onDragEnd={handleDragEnd}
         />
       ))}
     </>

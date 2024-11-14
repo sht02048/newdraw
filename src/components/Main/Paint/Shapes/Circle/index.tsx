@@ -1,15 +1,26 @@
 import { memo } from "react";
+import { KonvaEventObject } from "konva/lib/Node";
 import { Circle as KonvaCircle } from "react-konva";
 
 import { TOOL_TYPE } from "../../../../../constant";
-import { useAppSelector } from "../../../../../lib/redux/hooks";
+import { moveDiagram } from "../../../../../slices/paint";
+import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Circle);
 
 function Circle() {
+  const dispatch = useAppDispatch();
   const circles = useAppSelector((state) => state.paint.circles);
   const toolType = useAppSelector((state) => state.paint.toolType);
   const isDraggable = toolType === TOOL_TYPE.SELECT;
+
+  function handleDragEnd(e: KonvaEventObject<MouseEvent>) {
+    const x = e.target.x();
+    const y = e.target.y();
+    const id = e.target.id();
+
+    dispatch(moveDiagram({ action: "move", x, y, id, shape: "CIRCLE" }));
+  }
 
   return (
     <>
@@ -24,6 +35,7 @@ function Circle() {
           stroke={circle.stroke}
           strokeWidth={circle.strokeWidth}
           draggable={isDraggable}
+          onDragEnd={handleDragEnd}
         />
       ))}
     </>

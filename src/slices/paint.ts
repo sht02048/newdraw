@@ -19,7 +19,7 @@ import { LineCap, LineJoin } from "konva/lib/Shape";
 import { DEFAULT_VALUE, SESSION_KEY, TOOL_TYPE } from "../constant";
 
 const initialState: InitialState = {
-  historyStep: 0,
+  historyStep: DEFAULT_VALUE.HISTORY_STEP,
   history: [],
   toolType: TOOL_TYPE.RECTANGLE,
   color: DEFAULT_VALUE.COLOR,
@@ -38,11 +38,12 @@ const paintSlice = createSlice({
   initialState,
   reducers: {
     undo: (state) => {
-      if (state.historyStep === 1) return;
-      state.historyStep -= 1;
+      if (state.historyStep === -1) return;
 
-      const preHistory = state.history[state.historyStep - 1];
+      const preHistory = state.history[state.historyStep];
       const { x, y, id, shape, points, action } = preHistory;
+
+      state.historyStep -= 1;
 
       if (action === "create") {
         switch (shape) {
@@ -121,9 +122,60 @@ const paintSlice = createSlice({
       }
     },
     redo: (state) => {
-      if (state.history.length - 1 === state.historyStep) return;
+      if (state.history.length - 2 === state.historyStep) return;
+
+      const nextHistory = state.history[state.historyStep + 2];
+      const { x, y, id, shape, points, action } = nextHistory;
 
       state.historyStep += 1;
+
+      if (action === "create") {
+        return;
+      }
+
+      switch (shape) {
+        case TOOL_TYPE.CIRCLE:
+        case TOOL_TYPE.RECTANGLE:
+        case TOOL_TYPE.POLYGON: {
+          const shapeStorage = {
+            [TOOL_TYPE.CIRCLE]: state.circles,
+            [TOOL_TYPE.RECTANGLE]: state.rects,
+            [TOOL_TYPE.POLYGON]: state.polygons,
+          };
+
+          const selectedShape = shapeStorage[shape];
+          const currentShape: Diagram | undefined = selectedShape.find(
+            (shape) => shape.id === id,
+          );
+
+          if (!x || !y) return;
+
+          if (!currentShape) {
+            return;
+          }
+
+          currentShape.x = x;
+          currentShape.y = y;
+          return;
+        }
+        case TOOL_TYPE.LINE:
+        case TOOL_TYPE.CURVE: {
+          const pathStorage = {
+            [TOOL_TYPE.LINE]: state.lines,
+            [TOOL_TYPE.CURVE]: state.curves,
+          };
+
+          const selectedPath = pathStorage[shape];
+          const currentPath: Path | undefined = selectedPath.find(
+            (shape) => shape.id === id,
+          );
+
+          if (!currentPath || !points) return;
+
+          currentPath.points = points;
+          return;
+        }
+      }
     },
     clearPaint: () => {
       sessionStorage.clear();

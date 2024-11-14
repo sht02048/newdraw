@@ -8,6 +8,7 @@ const TOOL_TYPE = {
   POLYGON: "POLYGON",
 } as const;
 const DEFAULT_VALUE = {
+  HISTORY_STEP: -1,
   COLOR: "#2f73bf",
   STROKE: "#000000",
   STROKE_WIDTH: "5",

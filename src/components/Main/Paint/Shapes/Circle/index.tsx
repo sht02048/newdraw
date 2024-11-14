@@ -1,9 +1,12 @@
+import { memo } from "react";
 import { Circle as KonvaCircle } from "react-konva";
 
 import { TOOL_TYPE } from "../../../../../constant";
 import { useAppSelector } from "../../../../../lib/redux/hooks";
 
-export default function Circle() {
+export default memo(Circle);
+
+function Circle() {
   const circles = useAppSelector((state) => state.paint.circles);
   const toolType = useAppSelector((state) => state.paint.toolType);
   const isDraggable = toolType === TOOL_TYPE.SELECT;

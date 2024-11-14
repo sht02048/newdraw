@@ -1,8 +1,12 @@
+import { memo } from "react";
 import { Rect } from "react-konva";
+
 import { TOOL_TYPE } from "../../../../../constant";
 import { useAppSelector } from "../../../../../lib/redux/hooks";
 
-export default function Rectangle() {
+export default memo(Rectangle);
+
+function Rectangle() {
   const rects = useAppSelector((state) => state.paint.rects);
   const toolType = useAppSelector((state) => state.paint.toolType);
   const isDraggable = toolType === TOOL_TYPE.SELECT;

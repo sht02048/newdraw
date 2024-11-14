@@ -1,9 +1,12 @@
+import { memo } from "react";
 import { Line as KonvaLine } from "react-konva";
 
 import { TOOL_TYPE } from "../../../../../constant";
 import { useAppSelector } from "../../../../../lib/redux/hooks";
 
-export default function Curve() {
+export default memo(Curve);
+
+function Curve() {
   const curves = useAppSelector((state) => state.paint.curves);
   const toolType = useAppSelector((state) => state.paint.toolType);
   const isDraggable = toolType === TOOL_TYPE.SELECT;

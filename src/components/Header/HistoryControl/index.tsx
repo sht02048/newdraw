@@ -19,9 +19,9 @@ export default function HistoryControl() {
 
   return (
     <div className="mr-10">
-      <Icon src="/src/assets/undo.svg" handleClick={handleUndo} />
-      <Icon src="/src/assets/redo.svg" handleClick={handleRedo} />
-      <Icon src="/src/assets/trash.svg" handleClick={handleClick} />
+      <Icon src="/icons/undo.svg" handleClick={handleUndo} />
+      <Icon src="/icons/redo.svg" handleClick={handleRedo} />
+      <Icon src="/icons/trash.svg" handleClick={handleClick} />
     </div>
   );
 }

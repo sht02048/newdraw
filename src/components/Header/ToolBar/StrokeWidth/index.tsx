@@ -29,7 +29,7 @@ export default function StrokeWidth() {
   return (
     <div className="flex items-center justify-between w-24 px-2 bg-gray-100 border border-gray-300 rounded-md">
       <img
-        src="/src/assets/lineWidth.svg"
+        src="/icons/lineWidth.svg"
         alt="select stroke width"
         className="w-6 h-6"
       />

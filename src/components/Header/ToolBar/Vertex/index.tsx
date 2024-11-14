@@ -29,7 +29,7 @@ export default function Vertex() {
   return (
     <div className="flex items-center justify-between w-24 px-2 bg-gray-100 border border-gray-300 rounded-md">
       <img
-        src="/src/assets/hexagon.svg"
+        src="/icons/hexagon.svg"
         alt="select vertex"
         className="w-6 h-6 p-1"
       />

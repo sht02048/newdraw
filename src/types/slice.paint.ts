@@ -4,12 +4,15 @@ import type { Circle, Curve, Line, Polygon, Rectangle } from "./shape";
 type ToolType = keyof typeof TOOL_TYPE;
 
 type History = {
+  id: string;
   x?: number;
   y?: number;
-  action: "create" | "move";
+  action: "create" | "move" | "transform";
   shape: ToolType;
-  id: string;
   points?: number[];
+  width?: number;
+  height?: number;
+  radius?: number;
 };
 
 type InitialState = {

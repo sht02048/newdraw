@@ -16,7 +16,7 @@ import type {
   ToolType,
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
-import { DEFAULT_VALUE, SESSION_KEY, TOOL_TYPE } from "../constant";
+import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
 
 const initialState: InitialState = {
   historyStep: DEFAULT_VALUE.HISTORY_STEP,
@@ -197,6 +197,17 @@ const paintSlice = createSlice({
     changeVertex: (state, action: PayloadAction<{ vertex: string }>) => {
       state.vertex = action.payload.vertex;
     },
+    createShape: (state, action: PayloadAction<{ id: string }>) => {
+      const { id } = action.payload;
+
+      const history: History = {
+        id,
+        shape: state.toolType,
+        action: "create",
+      };
+
+      state.history.push(history);
+    },
     moveDiagram: (state, action: PayloadAction<History>) => {
       const history = action.payload;
       const { x, y, id, shape } = history;
@@ -222,20 +233,6 @@ const paintSlice = createSlice({
 
       currentShape.x = x;
       currentShape.y = y;
-
-      const appState = { paint: state };
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(appState));
-    },
-    createShape: (state, action: PayloadAction<{ id: string }>) => {
-      const { id } = action.payload;
-
-      const history: History = {
-        id,
-        shape: state.toolType,
-        action: "create",
-      };
-
-      state.history.push(history);
     },
     saveDiagram: (
       state,
@@ -301,9 +298,6 @@ const paintSlice = createSlice({
       });
 
       currentPath.points = movedPoint;
-
-      const appState = { paint: state };
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(appState));
     },
     saveLine: (
       state,
@@ -339,61 +333,34 @@ const paintSlice = createSlice({
       state.historyStep += 1;
       state.history.push(history);
     },
-    setRects: (state, action: PayloadAction<LocationData>) => {
-      const { x, y, id } = action.payload;
-      const { color, stroke, strokeWidth } = state;
-      const newRect: Rectangle = {
-        x: Number(x),
-        y: Number(y),
-        width: 0,
-        height: 0,
-        fill: color,
-        stroke,
-        strokeWidth: Number(strokeWidth),
-        id,
-      };
+    transformRect: (state, action: PayloadAction<History>) => {
+      const { x, y, width, height, shape, id } = action.payload;
 
-      state.rects.push(newRect);
-    },
-    updateRect: (state, action: PayloadAction<LocationData>) => {
-      const { x, y, id } = action.payload;
-      const currentRect: Rectangle | undefined = state.rects.find(
-        (rect) => rect.id === id,
+      if (!x || !y || !width || !height) return;
+
+      if (shape === "RECTANGLE") {
+        const selectedRect: Rectangle | undefined = state.rects.find(
+          (rect) => rect.id === id,
+        );
+
+        if (!selectedRect) return;
+
+        selectedRect.x = x;
+        selectedRect.y = y;
+        selectedRect.width = width;
+        selectedRect.height = height;
+
+        return;
+      }
+
+      const selectedPolygon: Polygon | undefined = state.polygons.find(
+        (polygon) => polygon.id === id,
       );
 
-      if (!currentRect) return;
+      if (!selectedPolygon) return;
 
-      const moveToX = x - currentRect.x;
-      const moveToY = y - currentRect.y;
-
-      currentRect.width = moveToX;
-      currentRect.height = moveToY;
-    },
-    setCircles: (state, action: PayloadAction<LocationData>) => {
-      const { x, y, id } = action.payload;
-      const { color, stroke, strokeWidth } = state;
-      const newCircle: Circle = {
-        x: Number(x),
-        y: Number(y),
-        radius: 1,
-        fill: color,
-        stroke,
-        strokeWidth: Number(strokeWidth),
-        id,
-      };
-
-      state.circles.push(newCircle);
-    },
-    updateCircle: (state, action: PayloadAction<LocationData>) => {
-      const { x, y, id } = action.payload;
-      const currentCircle: Circle | undefined = state.circles.find(
-        (circle) => circle.id === id,
-      );
-
-      if (!currentCircle) return;
-
-      currentCircle.radius =
-        ((x - currentCircle.x) ** 2 + (y - currentCircle.y) ** 2) ** 0.5;
+      selectedPolygon.x = x;
+      selectedPolygon.y = y;
     },
     setLines: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -452,6 +419,62 @@ const paintSlice = createSlice({
       currentCurve.points[4] = Number(x);
       currentCurve.points[5] = Number(y);
     },
+    setCircles: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const { color, stroke, strokeWidth } = state;
+      const newCircle: Circle = {
+        x: Number(x),
+        y: Number(y),
+        radius: 1,
+        fill: color,
+        stroke,
+        strokeWidth: Number(strokeWidth),
+        id,
+      };
+
+      state.circles.push(newCircle);
+    },
+    updateCircle: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentCircle: Circle | undefined = state.circles.find(
+        (circle) => circle.id === id,
+      );
+
+      if (!currentCircle) return;
+
+      currentCircle.radius =
+        ((x - currentCircle.x) ** 2 + (y - currentCircle.y) ** 2) ** 0.5;
+    },
+    setRects: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const { color, stroke, strokeWidth } = state;
+      const newRect: Rectangle = {
+        x: Number(x),
+        y: Number(y),
+        width: 0,
+        height: 0,
+        fill: color,
+        stroke,
+        strokeWidth: Number(strokeWidth),
+        id,
+      };
+
+      state.rects.push(newRect);
+    },
+    updateRect: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentRect: Rectangle | undefined = state.rects.find(
+        (rect) => rect.id === id,
+      );
+
+      if (!currentRect) return;
+
+      const moveToX = x - currentRect.x;
+      const moveToY = y - currentRect.y;
+
+      currentRect.width = moveToX;
+      currentRect.height = moveToY;
+    },
     setPolygons: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
       const { color, stroke, strokeWidth, vertex } = state;
@@ -496,6 +519,7 @@ export const {
   createShape,
   moveDiagram,
   saveDiagram,
+  transformRect,
   moveLine,
   saveLine,
   setLines,

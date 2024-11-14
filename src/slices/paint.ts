@@ -71,14 +71,14 @@ const paintSlice = createSlice({
     },
     updateRect: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
-      const currentRect: Rectangle[] | undefined = state.rects.filter(
+      const currentRect: Rectangle | undefined = state.rects.find(
         (rect) => rect.id === id,
       );
 
       if (!currentRect) return;
 
-      currentRect[0].width = x - currentRect[0].x;
-      currentRect[0].height = y - currentRect[0].y;
+      currentRect.width = x - currentRect.x;
+      currentRect.height = y - currentRect.y;
     },
     setCircles: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -97,14 +97,14 @@ const paintSlice = createSlice({
     },
     updateCircle: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
-      const currentCircle: Circle[] | undefined = state.circles.filter(
+      const currentCircle: Circle | undefined = state.circles.find(
         (circle) => circle.id === id,
       );
 
       if (!currentCircle) return;
 
-      currentCircle[0].radius =
-        ((x - currentCircle[0].x) ** 2 + (y - currentCircle[0].y) ** 2) ** 0.5;
+      currentCircle.radius =
+        ((x - currentCircle.x) ** 2 + (y - currentCircle.y) ** 2) ** 0.5;
     },
     setLines: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -124,14 +124,14 @@ const paintSlice = createSlice({
     },
     updateLine: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
-      const currentLine: Line[] | undefined = state.lines.filter(
+      const currentLine: Line | undefined = state.lines.find(
         (line) => line.id === id,
       );
 
       if (!currentLine) return;
 
-      currentLine[0].points[2] = Number(x);
-      currentLine[0].points[3] = Number(y);
+      currentLine.points[2] = Number(x);
+      currentLine.points[3] = Number(y);
     },
     setCurves: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -152,16 +152,16 @@ const paintSlice = createSlice({
     },
     updateCurve: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
-      const currentCurve: Curve[] | undefined = state.curves.filter(
+      const currentCurve: Curve | undefined = state.curves.find(
         (curve) => curve.id === id,
       );
 
       if (!currentCurve) return;
 
-      currentCurve[0].points[2] = (x + currentCurve[0].points[0]) / 2;
-      currentCurve[0].points[3] = y - 50;
-      currentCurve[0].points[4] = Number(x);
-      currentCurve[0].points[5] = Number(y);
+      currentCurve.points[2] = (x + currentCurve.points[0]) / 2;
+      currentCurve.points[3] = y - 50;
+      currentCurve.points[4] = Number(x);
+      currentCurve.points[5] = Number(y);
     },
   },
 });

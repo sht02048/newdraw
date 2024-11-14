@@ -7,9 +7,11 @@ import Shapes from "./Shapes";
 
 import {
   setCircles,
+  setCurves,
   setLines,
   setRects,
   updateCircle,
+  updateCurve,
   updateLine,
   updateRect,
 } from "../../../slices/paint";
@@ -50,6 +52,11 @@ export default function Paint() {
       }
       case TOOL_TYPE.LINE: {
         dispatch(setLines({ x, y, id }));
+        return;
+      }
+      case TOOL_TYPE.CURVE: {
+        dispatch(setCurves({ x, y, id }));
+        return;
       }
     }
   }
@@ -74,6 +81,10 @@ export default function Paint() {
       }
       case TOOL_TYPE.LINE: {
         dispatch(updateLine({ x, y, id: currentId }));
+        return;
+      }
+      case TOOL_TYPE.CURVE: {
+        dispatch(updateCurve({ x, y, id: currentId }));
         return;
       }
     }

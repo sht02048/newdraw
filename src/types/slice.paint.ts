@@ -1,5 +1,5 @@
 import { TOOL_TYPE } from "../constant";
-import type { Circle, Line, Rectangle } from "./shape";
+import type { Circle, Curve, Line, Rectangle } from "./shape";
 
 type ToolType = keyof typeof TOOL_TYPE;
 
@@ -13,6 +13,7 @@ type InitialState = {
   rects: Rectangle[];
   circles: Circle[];
   lines: Line[];
+  curves: Curve[];
 };
 
 type Coordinate = {

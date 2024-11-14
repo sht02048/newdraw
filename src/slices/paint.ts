@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
-import type { Circle, Line, Rectangle } from "../types/shape";
 import type {
   InitialState,
   LocationData,
   ToolType,
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
+import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
+import type { Circle, Curve, Line, Rectangle } from "../types/shape";
 
 const initialState: InitialState = {
   historyStep: 0,
@@ -19,6 +19,7 @@ const initialState: InitialState = {
   rects: [],
   circles: [],
   lines: [],
+  curves: [],
 };
 
 const paintSlice = createSlice({
@@ -132,6 +133,36 @@ const paintSlice = createSlice({
       currentLine[0].points[2] = Number(x);
       currentLine[0].points[3] = Number(y);
     },
+    setCurves: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const { stroke, strokeWidth } = state;
+      const intX = Number(x);
+      const intY = Number(y);
+      const newCurve: Curve = {
+        id,
+        points: [intX, intY, intX, intY, intX, intY],
+        stroke,
+        strokeWidth: Number(strokeWidth),
+        lineCap: DEFAULT_VALUE.LINE_CAP as LineCap,
+        lineJoin: DEFAULT_VALUE.LINE_JOIN as LineJoin,
+        tension: DEFAULT_VALUE.TENSION,
+      };
+
+      state.curves.push(newCurve);
+    },
+    updateCurve: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentCurve: Curve[] | undefined = state.curves.filter(
+        (curve) => curve.id === id,
+      );
+
+      if (!currentCurve) return;
+
+      currentCurve[0].points[2] = (x + currentCurve[0].points[0]) / 2;
+      currentCurve[0].points[3] = y - 50;
+      currentCurve[0].points[4] = Number(x);
+      currentCurve[0].points[5] = Number(y);
+    },
   },
 });
 
@@ -148,6 +179,8 @@ export const {
   updateCircle,
   setLines,
   updateLine,
+  setCurves,
+  updateCurve,
 } = paintSlice.actions;
 
 export default paintSlice.reducer;

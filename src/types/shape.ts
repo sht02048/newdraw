@@ -26,4 +26,8 @@ type Line = Shape & {
   lineJoin: LineJoin;
 };
 
-export type { Rectangle, Circle, Line };
+type Curve = Line & {
+  tension: number;
+};
+
+export type { Rectangle, Circle, Line, Curve };

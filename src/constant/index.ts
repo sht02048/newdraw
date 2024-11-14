@@ -5,7 +5,6 @@ const TOOL_TYPE = {
   CURVE: "CURVE",
   CIRCLE: "CIRCLE",
   RECTANGLE: "RECTANGLE",
-  TRIANGLE: "TRIANGLE",
 } as const;
 const DEFAULT_VALUE = {
   COLOR: "#2f73bf",

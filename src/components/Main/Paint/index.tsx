@@ -70,23 +70,17 @@ export default function Paint() {
     const { x, y } = position;
     const currentId = shapeId;
 
-    switch (toolType) {
-      case TOOL_TYPE.RECTANGLE: {
-        dispatch(updateRect({ x, y, id: currentId }));
-        return;
-      }
-      case TOOL_TYPE.CIRCLE: {
-        dispatch(updateCircle({ x, y, id: currentId }));
-        return;
-      }
-      case TOOL_TYPE.LINE: {
-        dispatch(updateLine({ x, y, id: currentId }));
-        return;
-      }
-      case TOOL_TYPE.CURVE: {
-        dispatch(updateCurve({ x, y, id: currentId }));
-        return;
-      }
+    const toolActions = {
+      [TOOL_TYPE.LINE]: updateLine,
+      [TOOL_TYPE.CURVE]: updateCurve,
+      [TOOL_TYPE.CIRCLE]: updateCircle,
+      [TOOL_TYPE.RECTANGLE]: updateRect,
+    };
+
+    const action = toolActions[toolType];
+
+    if (action) {
+      dispatch(action({ x, y, id: currentId }));
     }
   }
 

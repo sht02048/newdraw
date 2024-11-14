@@ -1,11 +1,11 @@
 import logger from "redux-logger";
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import paint from "../slices/paint";
-import { sessionMiddleware } from "../lib/redux/middleware";
 import loadState from "../lib/redux/preloadState";
+import { sessionMiddleware } from "../lib/redux/middleware";
 
-const reducer = { paint };
+const reducer = combineReducers({ paint });
 
 const store = configureStore({
   reducer,
@@ -14,4 +14,5 @@ const store = configureStore({
   preloadedState: loadState(),
 });
 
+export { reducer };
 export default store;

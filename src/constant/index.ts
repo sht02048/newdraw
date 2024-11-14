@@ -1,4 +1,5 @@
 const SESSION_KEY = "newDraw-state" as const;
+
 const TOOL_TYPE = {
   SELECT: "SELECT",
   LINE: "LINE",
@@ -7,6 +8,7 @@ const TOOL_TYPE = {
   RECTANGLE: "RECTANGLE",
   POLYGON: "POLYGON",
 } as const;
+
 const DEFAULT_VALUE = {
   HISTORY_STEP: -1,
   COLOR: "#2f73bf",
@@ -17,13 +19,24 @@ const DEFAULT_VALUE = {
   TENSION: 1,
   VERTEX: "6",
 } as const;
+
 const VERTEX = {
   MAX: 10,
   MIN: 3,
 } as const;
+
 const STROKEWIDTH = {
   MAX: 50,
   MIN: 5,
 } as const;
 
-export { SESSION_KEY, TOOL_TYPE, DEFAULT_VALUE, VERTEX, STROKEWIDTH };
+const MAX_HISTORY = 40;
+
+export {
+  SESSION_KEY,
+  TOOL_TYPE,
+  DEFAULT_VALUE,
+  VERTEX,
+  STROKEWIDTH,
+  MAX_HISTORY,
+};

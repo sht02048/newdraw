@@ -17,7 +17,7 @@ import type {
   TransformInfo,
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
-import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
+import { DEFAULT_VALUE, MAX_HISTORY, TOOL_TYPE } from "../constant";
 
 const initialState: InitialState = {
   historyStep: DEFAULT_VALUE.HISTORY_STEP,
@@ -173,7 +173,10 @@ const paintSlice = createSlice({
       const duplicatedShape = JSON.parse(JSON.stringify(shapes[shape]));
 
       state.history.push({ shape, shapeState: duplicatedShape });
-      state.historyStep += 1;
+
+      if (state.history.length > MAX_HISTORY) state.history.shift();
+      if (state.historyStep === MAX_HISTORY) return;
+      state.historyStep = state.history.length - 1;
     },
     transformRect: (state, action: PayloadAction<TransformInfo>) => {
       const { x, y, width, height, id } = action.payload;

@@ -3,10 +3,13 @@ import type { Circle, Curve, Line, Polygon, Rectangle } from "./shape";
 
 type ToolType = keyof typeof TOOL_TYPE;
 
-type History = Coordinate & {
+type History = {
+  x?: number;
+  y?: number;
   action: "create" | "move";
   shape: ToolType;
   id: string;
+  points?: number[];
 };
 
 type InitialState = {

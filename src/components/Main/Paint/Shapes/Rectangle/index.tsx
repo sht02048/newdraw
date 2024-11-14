@@ -3,7 +3,7 @@ import { Rect } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 
 import { TOOL_TYPE } from "../../../../../constant";
-import { moveDiagram } from "../../../../../slices/paint";
+import { moveDiagram, saveDiagram } from "../../../../../slices/paint";
 import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Rectangle);
@@ -20,6 +20,7 @@ function Rectangle() {
     const id = e.target.id();
 
     dispatch(moveDiagram({ action: "move", x, y, id, shape: "RECTANGLE" }));
+    dispatch(saveDiagram({ id, shape: "RECTANGLE" }));
   }
 
   return (

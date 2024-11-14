@@ -3,7 +3,7 @@ import { Line as KonvaLine } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 
 import { TOOL_TYPE } from "../../../../../constant";
-import { moveLine } from "../../../../../slices/paint";
+import { moveLine, saveLine } from "../../../../../slices/paint";
 import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Line);
@@ -20,6 +20,7 @@ function Line() {
     const id = e.target.id();
 
     dispatch(moveLine({ x, y, id, action: "move", shape: "LINE" }));
+    dispatch(saveLine({ id, shape: "LINE" }));
   }
 
   return (

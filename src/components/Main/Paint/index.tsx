@@ -6,6 +6,9 @@ import { KonvaEventObject } from "konva/lib/Node";
 import Shapes from "./Shapes";
 
 import {
+  createShape,
+  saveDiagram,
+  saveLine,
   setCircles,
   setCurves,
   setLines,
@@ -83,6 +86,21 @@ export default function Paint() {
   }
 
   function handleMouseUp() {
+    if (!shapeId || !isDrawing) return;
+    const payload = { id: shapeId };
+
+    dispatch(createShape(payload));
+
+    if (
+      toolType === TOOL_TYPE.CIRCLE ||
+      toolType === TOOL_TYPE.RECTANGLE ||
+      TOOL_TYPE.POLYGON
+    ) {
+      dispatch(saveDiagram({ id: shapeId, shape: toolType }));
+    } else {
+      dispatch(saveLine({ id: shapeId, shape: toolType }));
+    }
+
     setIsDrawing(false);
   }
 

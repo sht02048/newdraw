@@ -20,8 +20,8 @@ import { LineCap, LineJoin } from "konva/lib/Shape";
 import { DEFAULT_VALUE, MAX_HISTORY, TOOL_TYPE } from "../constant";
 
 const initialState: InitialState = {
-  historyStep: DEFAULT_VALUE.HISTORY_STEP,
-  history: [],
+  undo: [],
+  redo: [],
   toolType: TOOL_TYPE.RECTANGLE,
   color: DEFAULT_VALUE.COLOR,
   stroke: DEFAULT_VALUE.STROKE,
@@ -39,10 +39,14 @@ const paintSlice = createSlice({
   initialState,
   reducers: {
     undo: (state) => {
-      if (state.historyStep === -1) return;
+      if (state.undo.length === 0) return;
 
-      const preHistory = state.history[state.historyStep - 1];
-      const { shape, shapeState } = preHistory;
+      const currentState = state.undo.pop();
+      const prevState = state.undo[state.undo.length - 1];
+
+      if (!currentState) return;
+
+      const { shape, shapeState } = prevState;
 
       const stateShapes = {
         [TOOL_TYPE.LINE]: "lines",
@@ -58,13 +62,17 @@ const paintSlice = createSlice({
 
       // @ts-expect-error shapeState가 state의 속성이 아닐 시 에러 발생 가능성 있음
       state[selectedShape] = shapeState;
-      state.historyStep -= 1;
+      state.redo.push(currentState);
+      if (state.redo.length > MAX_HISTORY) state.redo.shift();
     },
     redo: (state) => {
-      if (state.history.length - 1 === state.historyStep) return;
+      if (state.redo.length === 0) return;
 
-      const nextHistory = state.history[state.historyStep + 1];
-      const { shape, shapeState } = nextHistory;
+      const nextState = state.redo.pop();
+
+      if (!nextState) return;
+
+      const { shape, shapeState } = nextState;
 
       const stateShapes = {
         [TOOL_TYPE.LINE]: "lines",
@@ -80,7 +88,8 @@ const paintSlice = createSlice({
 
       // @ts-expect-error shapeState가 state의 속성이 아닐 시 에러 발생 가능성 있음
       state[selectedShape] = shapeState;
-      state.historyStep += 1;
+      state.undo.push(nextState);
+      if (state.undo.length > MAX_HISTORY) state.undo.shift();
     },
     clearPaint: () => {
       sessionStorage.clear();
@@ -172,11 +181,9 @@ const paintSlice = createSlice({
 
       const duplicatedShape = JSON.parse(JSON.stringify(shapes[shape]));
 
-      state.history.push({ shape, shapeState: duplicatedShape });
+      state.undo.push({ shape, shapeState: duplicatedShape });
 
-      if (state.history.length > MAX_HISTORY) state.history.shift();
-      if (state.historyStep === MAX_HISTORY) return;
-      state.historyStep = state.history.length - 1;
+      if (state.undo.length > MAX_HISTORY) state.undo.shift();
     },
     transformRect: (state, action: PayloadAction<TransformInfo>) => {
       const { x, y, width, height, id } = action.payload;

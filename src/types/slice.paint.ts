@@ -22,9 +22,9 @@ type TransformInfo = MovedInfo & {
 };
 
 type InitialState = {
-  historyStep: number;
-  history: History[];
   toolType: ToolType;
+  undo: History[];
+  redo: History[];
   color: string;
   stroke: string;
   strokeWidth: string;

@@ -2,13 +2,13 @@ import { memo } from "react";
 import { Rect } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 
-import { TOOL_TYPE } from "../../../../../constant";
-import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 import {
   moveDiagram,
-  saveDiagram,
+  saveShape,
   transformRect,
 } from "../../../../../slices/paint";
+import { TOOL_TYPE } from "../../../../../constant";
+import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Rectangle);
 
@@ -27,8 +27,8 @@ function Rectangle({ onClick }: Props) {
     const y = e.target.y();
     const id = e.target.id();
 
-    dispatch(moveDiagram({ action: "move", x, y, id, shape: "RECTANGLE" }));
-    dispatch(saveDiagram({ id, shape: "RECTANGLE" }));
+    dispatch(moveDiagram({ x, y, id, shape: TOOL_TYPE.RECTANGLE }));
+    dispatch(saveShape({ shape: TOOL_TYPE.RECTANGLE }));
   }
 
   function handleTransform(e: KonvaEventObject<MouseEvent>) {
@@ -45,14 +45,13 @@ function Rectangle({ onClick }: Props) {
       transformRect({
         x,
         y,
+        id,
         width,
         height,
-        shape: "RECTANGLE",
-        id,
-        action: "transform",
+        shape: TOOL_TYPE.RECTANGLE,
       }),
     );
-    dispatch(saveDiagram({ id, shape: "RECTANGLE" }));
+    dispatch(saveShape({ shape: TOOL_TYPE.RECTANGLE }));
 
     shape.scaleX(1);
     shape.scaleY(1);

@@ -10,10 +10,11 @@ import type {
   Rectangle,
 } from "../types/shape";
 import type {
-  History,
   InitialState,
   LocationData,
+  MovedInfo,
   ToolType,
+  TransformInfo,
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
@@ -40,142 +41,46 @@ const paintSlice = createSlice({
     undo: (state) => {
       if (state.historyStep === -1) return;
 
-      const preHistory = state.history[state.historyStep];
-      const { x, y, id, shape, points, action } = preHistory;
+      const preHistory = state.history[state.historyStep - 1];
+      const { shape, shapeState } = preHistory;
 
+      const stateShapes = {
+        [TOOL_TYPE.LINE]: "lines",
+        [TOOL_TYPE.CURVE]: "curves",
+        [TOOL_TYPE.CIRCLE]: "circles",
+        [TOOL_TYPE.RECTANGLE]: "rects",
+        [TOOL_TYPE.POLYGON]: "polygons",
+      };
+
+      if (shape === TOOL_TYPE.SELECT) return;
+
+      const selectedShape = stateShapes[shape];
+
+      // @ts-expect-error shapeState가 state의 속성이 아닐 시 에러 발생 가능성 있음
+      state[selectedShape] = shapeState;
       state.historyStep -= 1;
-
-      if (action === "create") {
-        switch (shape) {
-          case TOOL_TYPE.LINE: {
-            const filteredLines = state.lines.filter((line) => line.id !== id);
-            state.lines = filteredLines;
-            return;
-          }
-          case TOOL_TYPE.CURVE: {
-            const filteredCurves = state.curves.filter(
-              (curve) => curve.id !== id,
-            );
-            state.curves = filteredCurves;
-            return;
-          }
-          case TOOL_TYPE.CIRCLE: {
-            const filteredCircles = state.circles.filter(
-              (circle) => circle.id !== id,
-            );
-            state.circles = filteredCircles;
-            return;
-          }
-          case TOOL_TYPE.RECTANGLE: {
-            const filteredRects = state.rects.filter((rect) => rect.id !== id);
-            state.rects = filteredRects;
-            return;
-          }
-          case TOOL_TYPE.POLYGON: {
-            const filteredPolygons = state.polygons.filter(
-              (polygon) => polygon.id !== id,
-            );
-            state.polygons = filteredPolygons;
-            return;
-          }
-        }
-      }
-
-      switch (shape) {
-        case TOOL_TYPE.CIRCLE:
-        case TOOL_TYPE.RECTANGLE:
-        case TOOL_TYPE.POLYGON: {
-          const shapeStorage = {
-            [TOOL_TYPE.CIRCLE]: state.circles,
-            [TOOL_TYPE.RECTANGLE]: state.rects,
-            [TOOL_TYPE.POLYGON]: state.polygons,
-          };
-
-          const selectedShape = shapeStorage[shape];
-          const currentShape: Diagram | undefined = selectedShape.find(
-            (shape) => shape.id === id,
-          );
-
-          if (!currentShape || !x || !y) return;
-
-          currentShape.x = x;
-          currentShape.y = y;
-          return;
-        }
-        case TOOL_TYPE.LINE:
-        case TOOL_TYPE.CURVE: {
-          const pathStorage = {
-            [TOOL_TYPE.LINE]: state.lines,
-            [TOOL_TYPE.CURVE]: state.curves,
-          };
-
-          const selectedPath = pathStorage[shape];
-          const currentPath: Path | undefined = selectedPath.find(
-            (shape) => shape.id === id,
-          );
-
-          if (!currentPath || !points) return;
-
-          currentPath.points = points;
-          return;
-        }
-      }
     },
     redo: (state) => {
-      if (state.history.length - 2 === state.historyStep) return;
+      if (state.history.length - 1 === state.historyStep) return;
 
-      const nextHistory = state.history[state.historyStep + 2];
-      const { x, y, id, shape, points, action } = nextHistory;
+      const nextHistory = state.history[state.historyStep + 1];
+      const { shape, shapeState } = nextHistory;
 
+      const stateShapes = {
+        [TOOL_TYPE.LINE]: "lines",
+        [TOOL_TYPE.CURVE]: "curves",
+        [TOOL_TYPE.CIRCLE]: "circles",
+        [TOOL_TYPE.RECTANGLE]: "rects",
+        [TOOL_TYPE.POLYGON]: "polygons",
+      };
+
+      if (shape === TOOL_TYPE.SELECT) return;
+
+      const selectedShape = stateShapes[shape];
+
+      // @ts-expect-error shapeState가 state의 속성이 아닐 시 에러 발생 가능성 있음
+      state[selectedShape] = shapeState;
       state.historyStep += 1;
-
-      if (action === "create") {
-        return;
-      }
-
-      switch (shape) {
-        case TOOL_TYPE.CIRCLE:
-        case TOOL_TYPE.RECTANGLE:
-        case TOOL_TYPE.POLYGON: {
-          const shapeStorage = {
-            [TOOL_TYPE.CIRCLE]: state.circles,
-            [TOOL_TYPE.RECTANGLE]: state.rects,
-            [TOOL_TYPE.POLYGON]: state.polygons,
-          };
-
-          const selectedShape = shapeStorage[shape];
-          const currentShape: Diagram | undefined = selectedShape.find(
-            (shape) => shape.id === id,
-          );
-
-          if (!x || !y) return;
-
-          if (!currentShape) {
-            return;
-          }
-
-          currentShape.x = x;
-          currentShape.y = y;
-          return;
-        }
-        case TOOL_TYPE.LINE:
-        case TOOL_TYPE.CURVE: {
-          const pathStorage = {
-            [TOOL_TYPE.LINE]: state.lines,
-            [TOOL_TYPE.CURVE]: state.curves,
-          };
-
-          const selectedPath = pathStorage[shape];
-          const currentPath: Path | undefined = selectedPath.find(
-            (shape) => shape.id === id,
-          );
-
-          if (!currentPath || !points) return;
-
-          currentPath.points = points;
-          return;
-        }
-      }
     },
     clearPaint: () => {
       sessionStorage.clear();
@@ -197,20 +102,8 @@ const paintSlice = createSlice({
     changeVertex: (state, action: PayloadAction<{ vertex: string }>) => {
       state.vertex = action.payload.vertex;
     },
-    createShape: (state, action: PayloadAction<{ id: string }>) => {
-      const { id } = action.payload;
-
-      const history: History = {
-        id,
-        shape: state.toolType,
-        action: "create",
-      };
-
-      state.history.push(history);
-    },
-    moveDiagram: (state, action: PayloadAction<History>) => {
-      const history = action.payload;
-      const { x, y, id, shape } = history;
+    moveDiagram: (state, action: PayloadAction<MovedInfo>) => {
+      const { x, y, id, shape } = action.payload;
       const shapeStorage = {
         [TOOL_TYPE.CIRCLE]: state.circles,
         [TOOL_TYPE.RECTANGLE]: state.rects,
@@ -229,82 +122,13 @@ const paintSlice = createSlice({
         (shape) => shape.id === id,
       );
 
-      if (!currentShape || !x || !y) return;
+      if (!currentShape) return;
 
       currentShape.x = x;
       currentShape.y = y;
     },
-    saveDiagram: (
-      state,
-      action: PayloadAction<{ id: string; shape: ToolType }>,
-    ) => {
-      const { id, shape } = action.payload;
-      const shapeStorage = {
-        [TOOL_TYPE.CIRCLE]: state.circles,
-        [TOOL_TYPE.RECTANGLE]: state.rects,
-        [TOOL_TYPE.POLYGON]: state.polygons,
-      };
-
-      if (
-        shape === TOOL_TYPE.SELECT ||
-        shape === TOOL_TYPE.LINE ||
-        shape === TOOL_TYPE.CURVE
-      )
-        return;
-
-      const selectedShape = shapeStorage[shape];
-      const currentShape = selectedShape.find((shape) => shape.id === id);
-
-      if (!currentShape) return;
-
-      const history: History = {
-        id,
-        shape,
-        x: currentShape.x,
-        y: currentShape.y,
-        action: "move",
-      };
-
-      state.historyStep += 1;
-      state.history.push(history);
-    },
-    moveLine: (state, action: PayloadAction<History>) => {
-      const history = action.payload;
-      const { x, y, id, shape } = history;
-      const pathStorage = {
-        [TOOL_TYPE.LINE]: state.lines,
-        [TOOL_TYPE.CURVE]: state.curves,
-      };
-
-      if (
-        shape === TOOL_TYPE.SELECT ||
-        shape === TOOL_TYPE.CIRCLE ||
-        shape === TOOL_TYPE.RECTANGLE ||
-        shape === TOOL_TYPE.POLYGON
-      )
-        return;
-
-      const path = pathStorage[shape];
-      const currentPath: Path | undefined = path.find((line) => line.id === id);
-
-      if (!currentPath || !x || !y) return;
-
-      const movedPoint = currentPath.points.map((point, index) => {
-        if (index % 2 === 0) {
-          return point + x;
-        }
-
-        return point + y;
-      });
-
-      currentPath.points = movedPoint;
-    },
-    saveLine: (
-      state,
-      action: PayloadAction<{ id: string; shape: ToolType }>,
-    ) => {
-      const { id, shape } = action.payload;
-
+    moveLine: (state, action: PayloadAction<MovedInfo>) => {
+      const { x, y, id, shape } = action.payload;
       const pathStorage = {
         [TOOL_TYPE.LINE]: state.lines,
         [TOOL_TYPE.CURVE]: state.curves,
@@ -323,44 +147,47 @@ const paintSlice = createSlice({
 
       if (!currentPath) return;
 
-      const history: History = {
-        id,
-        shape,
-        points: currentPath.points,
-        action: "move",
+      const movedPoint = currentPath.points.map((point, index) => {
+        if (index % 2 === 0) {
+          return point + x;
+        }
+
+        return point + y;
+      });
+
+      currentPath.points = movedPoint;
+    },
+    saveShape: (state, action: PayloadAction<{ shape: ToolType }>) => {
+      const { shape } = action.payload;
+
+      const shapes = {
+        [TOOL_TYPE.LINE]: state.lines,
+        [TOOL_TYPE.CURVE]: state.curves,
+        [TOOL_TYPE.CIRCLE]: state.circles,
+        [TOOL_TYPE.RECTANGLE]: state.rects,
+        [TOOL_TYPE.POLYGON]: state.polygons,
       };
 
+      if (shape === TOOL_TYPE.SELECT) return;
+
+      const duplicatedShape = JSON.parse(JSON.stringify(shapes[shape]));
+
+      state.history.push({ shape, shapeState: duplicatedShape });
       state.historyStep += 1;
-      state.history.push(history);
     },
-    transformRect: (state, action: PayloadAction<History>) => {
-      const { x, y, width, height, shape, id } = action.payload;
+    transformRect: (state, action: PayloadAction<TransformInfo>) => {
+      const { x, y, width, height, id } = action.payload;
 
-      if (!x || !y || !width || !height) return;
-
-      if (shape === "RECTANGLE") {
-        const selectedRect: Rectangle | undefined = state.rects.find(
-          (rect) => rect.id === id,
-        );
-
-        if (!selectedRect) return;
-
-        selectedRect.x = x;
-        selectedRect.y = y;
-        selectedRect.width = width;
-        selectedRect.height = height;
-
-        return;
-      }
-
-      const selectedPolygon: Polygon | undefined = state.polygons.find(
-        (polygon) => polygon.id === id,
+      const selectedRect: Rectangle | undefined = state.rects.find(
+        (rect) => rect.id === id,
       );
 
-      if (!selectedPolygon) return;
+      if (!selectedRect) return;
 
-      selectedPolygon.x = x;
-      selectedPolygon.y = y;
+      selectedRect.x = x;
+      selectedRect.y = y;
+      selectedRect.width = width;
+      selectedRect.height = height;
     },
     setLines: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -516,12 +343,10 @@ export const {
   changeColor,
   changeStrokeWidth,
   changeVertex,
-  createShape,
   moveDiagram,
-  saveDiagram,
+  saveShape,
   transformRect,
   moveLine,
-  saveLine,
   setLines,
   updateLine,
   setCurves,

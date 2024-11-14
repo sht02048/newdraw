@@ -3,7 +3,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Circle as KonvaCircle } from "react-konva";
 
 import { TOOL_TYPE } from "../../../../../constant";
-import { moveDiagram, saveDiagram } from "../../../../../slices/paint";
+import { moveDiagram, saveShape } from "../../../../../slices/paint";
 import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Circle);
@@ -23,8 +23,8 @@ function Circle({ onClick }: Props) {
     const y = e.target.y();
     const id = e.target.id();
 
-    dispatch(moveDiagram({ action: "move", x, y, id, shape: "CIRCLE" }));
-    dispatch(saveDiagram({ id, shape: "CIRCLE" }));
+    dispatch(moveDiagram({ x, y, id, shape: TOOL_TYPE.CIRCLE }));
+    dispatch(saveShape({ shape: TOOL_TYPE.CIRCLE }));
   }
 
   return (

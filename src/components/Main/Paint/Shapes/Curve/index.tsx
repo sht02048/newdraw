@@ -3,7 +3,7 @@ import { Line as KonvaLine } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 
 import { TOOL_TYPE } from "../../../../../constant";
-import { moveLine } from "../../../../../slices/paint";
+import { moveLine, saveShape } from "../../../../../slices/paint";
 import { useAppSelector, useAppDispatch } from "../../../../../lib/redux/hooks";
 
 export default memo(Curve);
@@ -23,7 +23,8 @@ function Curve({ onClick }: Props) {
     const y = e.target.y();
     const id = e.target.id();
 
-    dispatch(moveLine({ x, y, id, action: "move", shape: "CURVE" }));
+    dispatch(moveLine({ x, y, id, shape: TOOL_TYPE.CURVE }));
+    dispatch(saveShape({ shape: TOOL_TYPE.CURVE }));
   }
 
   return (

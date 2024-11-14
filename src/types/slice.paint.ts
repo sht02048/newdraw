@@ -1,18 +1,24 @@
 import { TOOL_TYPE } from "../constant";
-import type { Circle, Curve, Line, Polygon, Rectangle } from "./shape";
+import type {
+  Circle,
+  Curve,
+  Diagram,
+  Line,
+  Path,
+  Polygon,
+  Rectangle,
+} from "./shape";
 
 type ToolType = keyof typeof TOOL_TYPE;
 
-type History = {
+type MovedInfo = Coordinate & {
   id: string;
-  x?: number;
-  y?: number;
-  action: "create" | "move" | "transform";
   shape: ToolType;
-  points?: number[];
-  width?: number;
-  height?: number;
-  radius?: number;
+};
+
+type TransformInfo = MovedInfo & {
+  width: number;
+  height: number;
 };
 
 type InitialState = {
@@ -30,6 +36,11 @@ type InitialState = {
   polygons: Polygon[];
 };
 
+type History = {
+  shape: ToolType;
+  shapeState: Path | Diagram[];
+};
+
 type Coordinate = {
   x: number;
   y: number;
@@ -39,4 +50,11 @@ type LocationData = Coordinate & {
   id: string;
 };
 
-export type { InitialState, Coordinate, LocationData, ToolType, History };
+export type {
+  InitialState,
+  Coordinate,
+  LocationData,
+  ToolType,
+  MovedInfo,
+  TransformInfo,
+};

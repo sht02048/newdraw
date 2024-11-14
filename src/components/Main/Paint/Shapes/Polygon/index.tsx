@@ -8,7 +8,11 @@ import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Polygon);
 
-function Polygon() {
+type Props = {
+  onClick: (e: KonvaEventObject<MouseEvent>) => void;
+};
+
+function Polygon({ onClick }: Props) {
   const dispatch = useAppDispatch();
   const polygons = useAppSelector((state) => state.paint.polygons);
   const toolType = useAppSelector((state) => state.paint.toolType);
@@ -38,6 +42,7 @@ function Polygon() {
           strokeWidth={polygon.strokeWidth}
           draggable={isDraggable}
           onDragEnd={handleDragEnd}
+          onClick={onClick}
         />
       ))}
     </>

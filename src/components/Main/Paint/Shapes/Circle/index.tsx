@@ -8,7 +8,11 @@ import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Circle);
 
-function Circle() {
+type Props = {
+  onClick: (e: KonvaEventObject<MouseEvent>) => void;
+};
+
+function Circle({ onClick }: Props) {
   const dispatch = useAppDispatch();
   const circles = useAppSelector((state) => state.paint.circles);
   const toolType = useAppSelector((state) => state.paint.toolType);
@@ -37,6 +41,7 @@ function Circle() {
           strokeWidth={circle.strokeWidth}
           draggable={isDraggable}
           onDragEnd={handleDragEnd}
+          onClick={onClick}
         />
       ))}
     </>

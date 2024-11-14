@@ -8,7 +8,11 @@ import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Line);
 
-function Line() {
+type Props = {
+  onClick: (e: KonvaEventObject<MouseEvent>) => void;
+};
+
+function Line({ onClick }: Props) {
   const dispatch = useAppDispatch();
   const lines = useAppSelector((state) => state.paint.lines);
   const toolType = useAppSelector((state) => state.paint.toolType);
@@ -37,6 +41,7 @@ function Line() {
             lineJoin={line.lineJoin}
             draggable={isDraggable}
             onDragEnd={handleDragEnd}
+            onClick={onClick}
           />
         );
       })}

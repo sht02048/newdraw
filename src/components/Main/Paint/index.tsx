@@ -1,7 +1,8 @@
 import { v4 as uuid } from "uuid";
 import { useRef, useState } from "react";
-import { Stage, Layer } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
+import { Stage, Layer, Transformer } from "react-konva";
+import { Transformer as TTransformer } from "konva/lib/shapes/Transformer";
 
 import Shapes from "./Shapes";
 
@@ -26,11 +27,16 @@ import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
 
 export default function Paint() {
   const dispatch = useAppDispatch();
+  const toolType = useAppSelector((state) => state.paint.toolType);
+
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const transformerRef = useRef<TTransformer | null>(null);
+
   const [shapeId, setShapeId] = useState<string | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
-  const toolType = useAppSelector((state) => state.paint.toolType);
+
   const { paintWidth, paintHeight } = usePaintSize(stageRef);
+
   const isDraggable = toolType === TOOL_TYPE.SELECT;
 
   function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
@@ -104,6 +110,19 @@ export default function Paint() {
     setIsDrawing(false);
   }
 
+  function handleTransform(e: KonvaEventObject<MouseEvent>) {
+    if (!isDraggable) return;
+
+    transformerRef?.current?.nodes([e.currentTarget]);
+    transformerRef?.current?.getLayer()?.batchDraw();
+  }
+
+  function handleStageClick(e: KonvaEventObject<MouseEvent>) {
+    if (e.target !== e.target.getStage()) return;
+
+    transformerRef?.current?.nodes([]);
+  }
+
   return (
     <div className="w-full bg-white shadow-inner h-5/6" ref={stageRef}>
       <Stage
@@ -112,9 +131,11 @@ export default function Paint() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onClick={handleStageClick}
       >
         <Layer>
-          <Shapes />
+          <Shapes onClick={handleTransform} />
+          <Transformer ref={transformerRef} />
         </Layer>
       </Stage>
     </div>

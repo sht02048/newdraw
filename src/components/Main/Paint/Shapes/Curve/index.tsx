@@ -8,7 +8,11 @@ import { useAppSelector, useAppDispatch } from "../../../../../lib/redux/hooks";
 
 export default memo(Curve);
 
-function Curve() {
+type Props = {
+  onClick: (e: KonvaEventObject<MouseEvent>) => void;
+};
+
+function Curve({ onClick }: Props) {
   const dispatch = useAppDispatch();
   const curves = useAppSelector((state) => state.paint.curves);
   const toolType = useAppSelector((state) => state.paint.toolType);
@@ -36,6 +40,7 @@ function Curve() {
           tension={curve.tension}
           draggable={isDraggable}
           onDragEnd={handleDragEnd}
+          onClick={onClick}
         />
       ))}
     </>

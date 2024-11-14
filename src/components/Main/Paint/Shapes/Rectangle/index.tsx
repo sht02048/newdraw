@@ -8,7 +8,11 @@ import { useAppDispatch, useAppSelector } from "../../../../../lib/redux/hooks";
 
 export default memo(Rectangle);
 
-function Rectangle() {
+type Props = {
+  onClick: (e: KonvaEventObject<MouseEvent>) => void;
+};
+
+function Rectangle({ onClick }: Props) {
   const rects = useAppSelector((state) => state.paint.rects);
   const toolType = useAppSelector((state) => state.paint.toolType);
   const isDraggable = toolType === TOOL_TYPE.SELECT;
@@ -38,6 +42,7 @@ function Rectangle() {
           strokeWidth={rect.strokeWidth}
           draggable={isDraggable}
           onDragEnd={handleDragEnd}
+          onClick={onClick}
         />
       ))}
     </>

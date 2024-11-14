@@ -9,10 +9,12 @@ import {
   setCircles,
   setCurves,
   setLines,
+  setPolygons,
   setRects,
   updateCircle,
   updateCurve,
   updateLine,
+  updatePolygon,
   updateRect,
 } from "../../../slices/paint";
 import { TOOL_TYPE } from "../../../constant";
@@ -41,23 +43,18 @@ export default function Paint() {
 
     setShapeId(id);
 
-    switch (toolType) {
-      case TOOL_TYPE.RECTANGLE: {
-        dispatch(setRects({ x, y, id }));
-        return;
-      }
-      case TOOL_TYPE.CIRCLE: {
-        dispatch(setCircles({ x, y, id }));
-        return;
-      }
-      case TOOL_TYPE.LINE: {
-        dispatch(setLines({ x, y, id }));
-        return;
-      }
-      case TOOL_TYPE.CURVE: {
-        dispatch(setCurves({ x, y, id }));
-        return;
-      }
+    const toolActions = {
+      [TOOL_TYPE.LINE]: setLines,
+      [TOOL_TYPE.CURVE]: setCurves,
+      [TOOL_TYPE.CIRCLE]: setCircles,
+      [TOOL_TYPE.RECTANGLE]: setRects,
+      [TOOL_TYPE.POLYGON]: setPolygons,
+    };
+
+    const action = toolActions[toolType];
+
+    if (action) {
+      dispatch(action({ x, y, id }));
     }
   }
 
@@ -75,6 +72,7 @@ export default function Paint() {
       [TOOL_TYPE.CURVE]: updateCurve,
       [TOOL_TYPE.CIRCLE]: updateCircle,
       [TOOL_TYPE.RECTANGLE]: updateRect,
+      [TOOL_TYPE.POLYGON]: updatePolygon,
     };
 
     const action = toolActions[toolType];

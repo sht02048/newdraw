@@ -7,7 +7,7 @@ import type {
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { DEFAULT_VALUE, TOOL_TYPE } from "../constant";
-import type { Circle, Curve, Line, Rectangle } from "../types/shape";
+import type { Circle, Curve, Line, Polygon, Rectangle } from "../types/shape";
 
 const initialState: InitialState = {
   historyStep: 0,
@@ -16,10 +16,12 @@ const initialState: InitialState = {
   color: DEFAULT_VALUE.COLOR,
   stroke: DEFAULT_VALUE.STROKE,
   strokeWidth: DEFAULT_VALUE.STROKE_WIDTH,
-  rects: [],
-  circles: [],
+  vertex: DEFAULT_VALUE.VERTEX,
   lines: [],
   curves: [],
+  circles: [],
+  rects: [],
+  polygons: [],
 };
 
 const paintSlice = createSlice({
@@ -52,6 +54,9 @@ const paintSlice = createSlice({
       action: PayloadAction<{ strokeWidth: string }>,
     ) => {
       state.strokeWidth = action.payload.strokeWidth;
+    },
+    changeVertex: (state, action: PayloadAction<{ vertex: string }>) => {
+      state.vertex = action.payload.vertex;
     },
     setRects: (state, action: PayloadAction<LocationData>) => {
       const { x, y, id } = action.payload;
@@ -163,6 +168,36 @@ const paintSlice = createSlice({
       currentCurve.points[4] = Number(x);
       currentCurve.points[5] = Number(y);
     },
+    setPolygons: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const { color, stroke, strokeWidth, vertex } = state;
+      const intX = Number(x);
+      const intY = Number(y);
+      const intVertex = Number(vertex);
+      const newPolygon: Polygon = {
+        x: intX,
+        y: intY,
+        sides: intVertex,
+        radius: 1,
+        fill: color,
+        stroke,
+        strokeWidth: Number(strokeWidth),
+        id,
+      };
+
+      state.polygons.push(newPolygon);
+    },
+    updatePolygon: (state, action: PayloadAction<LocationData>) => {
+      const { x, y, id } = action.payload;
+      const currentPolygon: Polygon | undefined = state.polygons.find(
+        (polygon) => polygon.id === id,
+      );
+
+      if (!currentPolygon) return;
+
+      currentPolygon.radius =
+        ((x - currentPolygon.x) ** 2 + (y - currentPolygon.y) ** 2) ** 0.5;
+    },
   },
 });
 
@@ -175,12 +210,15 @@ export const {
   changeTool,
   changeColor,
   changeStrokeWidth,
+  changeVertex,
   setCircles,
   updateCircle,
   setLines,
   updateLine,
   setCurves,
   updateCurve,
+  setPolygons,
+  updatePolygon,
 } = paintSlice.actions;
 
 export default paintSlice.reducer;

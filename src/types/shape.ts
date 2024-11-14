@@ -7,6 +7,12 @@ type Shape = {
   strokeWidth: number;
 };
 
+type Circle = Shape &
+  Coordinate & {
+    radius: number;
+    fill: string;
+  };
+
 type Rectangle = Shape &
   Coordinate & {
     width: number;
@@ -14,11 +20,9 @@ type Rectangle = Shape &
     fill: string;
   };
 
-type Circle = Shape &
-  Coordinate & {
-    radius: number;
-    fill: string;
-  };
+type Polygon = Circle & {
+  sides: number;
+};
 
 type Line = Shape & {
   points: number[];
@@ -30,4 +34,4 @@ type Curve = Line & {
   tension: number;
 };
 
-export type { Rectangle, Circle, Line, Curve };
+export type { Rectangle, Circle, Line, Curve, Polygon };

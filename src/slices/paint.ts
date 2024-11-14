@@ -1,6 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type {
+  Circle,
+  Curve,
+  Diagram,
+  Line,
+  Path,
+  Polygon,
+  Rectangle,
+} from "../types/shape";
+import type {
   History,
   InitialState,
   LocationData,
@@ -8,14 +17,6 @@ import type {
 } from "../types/slice.paint";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { DEFAULT_VALUE, SESSION_KEY, TOOL_TYPE } from "../constant";
-import type {
-  Circle,
-  Curve,
-  Diagram,
-  Line,
-  Polygon,
-  Rectangle,
-} from "../types/shape";
 
 const initialState: InitialState = {
   historyStep: 0,
@@ -91,6 +92,41 @@ const paintSlice = createSlice({
 
       currentShape.x = x;
       currentShape.y = y;
+
+      const appState = { paint: state };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(appState));
+      state.history.push(history);
+    },
+    moveLine: (state, action: PayloadAction<History>) => {
+      const history = action.payload;
+      const { x, y, id, shape } = history;
+      const pathStorage = {
+        [TOOL_TYPE.LINE]: state.lines,
+        [TOOL_TYPE.CURVE]: state.curves,
+      };
+
+      if (
+        shape === TOOL_TYPE.SELECT ||
+        shape === TOOL_TYPE.CIRCLE ||
+        shape === TOOL_TYPE.RECTANGLE ||
+        shape === TOOL_TYPE.POLYGON
+      )
+        return;
+
+      const path = pathStorage[shape];
+      const currentPath: Path | undefined = path.find((line) => line.id === id);
+
+      if (!currentPath) return;
+
+      const movedPoint = currentPath.points.map((point, index) => {
+        if (index % 2 === 0) {
+          return point + x;
+        }
+
+        return point + y;
+      });
+
+      currentPath.points = movedPoint;
 
       const appState = { paint: state };
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(appState));
@@ -250,6 +286,8 @@ export const {
   changeColor,
   changeStrokeWidth,
   changeVertex,
+  moveDiagram,
+  moveLine,
   setLines,
   updateLine,
   setCurves,
@@ -258,7 +296,6 @@ export const {
   updateCircle,
   setRects,
   updateRect,
-  moveDiagram,
   setPolygons,
   updatePolygon,
 } = paintSlice.actions;

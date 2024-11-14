@@ -36,4 +36,6 @@ type Curve = Line & {
 
 type Diagram = Circle | Rectangle | Polygon;
 
-export type { Rectangle, Circle, Line, Curve, Polygon, Diagram };
+type Path = Line | Curve;
+
+export type { Rectangle, Circle, Line, Curve, Polygon, Diagram, Path };
